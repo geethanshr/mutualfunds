@@ -1,0 +1,21 @@
+import pandas as pd
+from mftool import Mftool
+
+# Initialize Mftool client
+mf = Mftool()
+
+# Load the Excel file and specify the worksheet
+excel_file_path = '/content/drive/MyDrive/msesaransh.xlsx'
+sheet_name = 'mf2021'
+
+# Read the entire Excel file
+df = pd.read_excel(excel_file_path, sheet_name=sheet_name)
+
+# Read only the ID column into a DataFrame, removing null values and duplicates
+df_id = pd.read_excel(excel_file_path, sheet_name=sheet_name, usecols=["(B) ID"]).dropna().drop_duplicates()
+# Loop through the IDs in the DataFrame
+
+for fund_id in df_id['(B) ID']:
+    # Convert fund_id to string and retrieve the quote
+    q = mf.get_scheme_quote(str(int(fund_id)))  # Convert to integer first to remove decimal point
+    print(q)
