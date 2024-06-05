@@ -1,0 +1,80 @@
+import pandas as pd
+from mftool import Mftool
+from datetime import datetime, timedelta
+
+# Initialize Mftool client
+mf = Mftool()
+
+# Load the Excel file and specify the worksheet
+excel_file_path = 'add path of file here'
+sheet_name = 'add worksheet sheet name here'
+df = pd.read_excel(excel_file_path, sheet_name=sheet_name)
+
+# Drop rows where either the ID or the name is missing
+df_filtered = df.dropna(subset=['(B) ID', '( E ) MF/ULIP/SHARE/Company Name'])
+
+# Filter out NaN values in the "(B) ID" column and convert to integers or strings
+mutual_funds = df_filtered['(B) ID'].apply(lambda x: int(x) if x.is_integer() else str(x)).tolist()
+
+# Extract mutual fund names corresponding to IDs
+fund_names = df_filtered['( E ) MF/ULIP/SHARE/Company Name'].tolist()
+
+# Create a dictionary mapping IDs to their names
+id_to_name = dict(zip(mutual_funds, fund_names))
+
+# List to collect problematic funds
+problematic_funds = []
+
+# Function to calculate the percentage change
+def get_percentage_change(fund, days):
+    end_date = datetime.today()
+    start_date = end_date - timedelta(days=days)
+    try:
+        nav_history = mf.get_scheme_historical_nav(fund)
+        nav_data = nav_history['data']
+        if nav_data:
+            start_nav = float(nav_data[-days]['nav'])
+            end_nav = float(nav_data[-1]['nav'])
+            percentage_change = ((end_nav - start_nav) / start_nav) * 100
+            return percentage_change
+        else:
+            problematic_funds.append(fund)
+            return None
+    except Exception as e:
+        print(f"Error fetching data for {fund}: {e}")
+        problematic_funds.append(fund)
+        return None
+
+# Create a list to hold results
+results = []
+
+# Iterate through each mutual fund ticker and calculate the percentage changes
+for i, fund_ticker in enumerate(mutual_funds):
+    one_day_change = get_percentage_change(fund_ticker, 1)
+    one_week_change = get_percentage_change(fund_ticker, 7)
+    two_week_change = get_percentage_change(fund_ticker, 14)
+    one_month_change = get_percentage_change(fund_ticker, 30)
+    results.append({
+        'Mutual Fund': fund_ticker,
+        '1 Day Change': one_day_change,
+        '1 Week Change': one_week_change,
+        '2 Week Change': two_week_change,
+        '1 Month Change': one_month_change,
+        'Name of fund': id_to_name.get(fund_ticker, 'Unknown')
+    })
+
+# Convert the list of dictionaries to a DataFrame
+result_df = pd.DataFrame(results)
+
+
+# Sort the DataFrame based on the "1 Week Change" column
+result_df_sorted = result_df.sort_values(by='1 Week Change', ascending=False)
+
+# Print the problematic funds
+if problematic_funds:
+    print("Problematic funds (possibly invalid):")
+    for fund in problematic_funds:
+        print(fund)
+
+# Print the result DataFrame
+print(result_df_sorted)
