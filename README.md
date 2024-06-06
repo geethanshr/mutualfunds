@@ -1,12 +1,14 @@
 #% change in mutualfunds
 
-The initial requirement to be downloaded
+1. The initial requirement to run in first cell of notebook-
 !pip install mftool
 
-Connect spreadsheet by mounting drive
+2. Connect spreadsheet by mounting drive using code from mount_dive file
 
-Then try to run checking file
+3. Then try to run checking file's code
 
-Finally run main file for % changes
+4. Finally run main file's code for % changes im your mutual funds.
 
+
+Documentation for Mftool
 https://mftool.readthedocs.io/en/latest/
