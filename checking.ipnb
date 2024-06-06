@@ -5,14 +5,14 @@ from mftool import Mftool
 mf = Mftool()
 
 # Load the Excel file and specify the worksheet
-excel_file_path = '/content/drive/MyDrive/msesaransh.xlsx'
-sheet_name = 'mf2021'
+excel_file_path = 'enter your file path here'
+sheet_name = 'enter your worksheet name here'
 
 # Read the entire Excel file
 df = pd.read_excel(excel_file_path, sheet_name=sheet_name)
 
 # Read only the ID column into a DataFrame, removing null values and duplicates
-df_id = pd.read_excel(excel_file_path, sheet_name=sheet_name, usecols=["(B) ID"]).dropna().drop_duplicates()
+df_id = pd.read_excel(excel_file_path, sheet_name=sheet_name, usecols=["enter your id column name here"]).dropna().drop_duplicates()
 # Loop through the IDs in the DataFrame
 
 for fund_id in df_id['(B) ID']:
