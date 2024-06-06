@@ -5,19 +5,25 @@ from datetime import datetime, timedelta
 # Initialize Mftool client
 mf = Mftool()
 
+# Replace with the path to your Excel file and worksheet name
+excel_file_path = 'add_your_file_path_here.xlsx'
+sheet_name = 'add_your_sheet_name_here'
+
 # Load the Excel file and specify the worksheet
-excel_file_path = 'add path of file here'
-sheet_name = 'add worksheet sheet name here'
 df = pd.read_excel(excel_file_path, sheet_name=sheet_name)
 
+# Replace with your column names
+id_column = 'add your ID column name here'
+name_column = 'add your mf column name here'
+
 # Drop rows where either the ID or the name is missing
-df_filtered = df.dropna(subset=['(B) ID', '( E ) MF/ULIP/SHARE/Company Name'])
+df_filtered = df.dropna(subset=[id_column,name_column])
 
 # Filter out NaN values in the "(B) ID" column and convert to integers or strings
 mutual_funds = df_filtered['(B) ID'].apply(lambda x: int(x) if x.is_integer() else str(x)).tolist()
 
 # Extract mutual fund names corresponding to IDs
-fund_names = df_filtered['( E ) MF/ULIP/SHARE/Company Name'].tolist()
+fund_names = df_filtered[name_column].tolist()
 
 # Create a dictionary mapping IDs to their names
 id_to_name = dict(zip(mutual_funds, fund_names))
