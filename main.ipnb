@@ -5,9 +5,11 @@ from datetime import datetime, timedelta
 # Initialize Mftool client
 mf = Mftool()
 
+# Replace with the path to your Excel file and worksheet name
+excel_file_path = 'add_your_file_path_here.xlsx'
+sheet_name = 'add_your_sheet_name_here'
+
 # Load the Excel file and specify the worksheet
-excel_file_path = '/content/drive/MyDrive/msesaransh.xlsx'
-sheet_name = 'mf2021'
 df = pd.read_excel(excel_file_path, sheet_name=sheet_name)
 
 # Replace with your column names
